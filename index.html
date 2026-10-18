@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Геннадій Виноград</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f4f6f4;color:#333;line-height:1.6}
+.youtube-button{position:fixed;top:20px;left:20px;background:linear-gradient(135deg,#FF0000,#CC0000);padding:12px 22px;border-radius:50px;color:#fff;text-decoration:none;font-weight:bold;font-size:14px;box-shadow:0 4px 15px rgba(255,0,0,.4);display:inline-flex;align-items:center;gap:8px;z-index:999;border:2px solid rgba(255,255,255,.3);transition:.3s}
+.youtube-button:hover{transform:translateY(-3px)}
+header{background:linear-gradient(rgba(30,50,35,.75),rgba(30,50,35,.75)),url('https://i.postimg.cc/pr6p2WLx/krasnyi-vinograd-na-vinogradnike-(1).jpg') center/cover;color:#fff;text-align:center;padding:40px 20px;padding-top:80px}
+header h1{font-size:2em;margin-bottom:10px}
+.top-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.viber-header{background:#7360F2;color:#fff;padding:10px 20px;border-radius:50px;text-decoration:none;font-weight:bold}
+.language-switcher{display:flex;gap:5px;background:rgba(255,255,255,.2);padding:4px;border-radius:20px}
+.lang-btn{background:rgba(255,255,255,.3);border:none;padding:6px 12px;border-radius:15px;cursor:pointer;font-weight:600;color:#fff;font-size:.85em}
+.lang-btn.active{background:#4a7c59}
+.cart-toggle{position:relative;background:#4a7c59;color:#fff;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2em;cursor:pointer;border:2px solid #fff}
+#cart-count{position:absolute;top:-5px;right:-5px;background:#e74c3c;color:#fff;min-width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:.7em;font-weight:bold;border:2px solid #fff}
+#err-banner{position:fixed;top:0;left:0;right:0;background:#c00;color:#fff;padding:14px;z-index:99999;font-family:monospace;font-size:14px}
+#err-banner button{position:absolute;right:10px;top:10px;background:#fff;color:#c00;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:bold}
+#cart-container{position:fixed;top:80px;right:20px;background:#fff;padding:20px;border-radius:15px;width:380px;max-width:calc(100vw - 40px);max-height:80vh;overflow-y:auto;z-index:1000;box-shadow:0 10px 40px rgba(0,0,0,.25);display:none}
+#cart-container.show{display:block}
+#cart h3{color:#4a7c59;border-bottom:2px solid #f0f0f0;padding-bottom:10px;margin-bottom:15px;font-size:1.15em}
+#cart-items{max-height:300px;overflow-y:auto;margin:10px 0}
+.cart-item{padding:10px 0;border-bottom:1px solid rgba(74,124,89,.2)}
+.cart-item:last-child{border-bottom:none}
+.cart-item-name{font-weight:600;font-size:.92em}
+.cart-item-sub{font-size:.8em;color:#777;margin:4px 0 8px}
+.cart-item-controls{display:flex;align-items:center;gap:6px}
+.qty-btn{background:#4a7c59;color:#fff;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-weight:bold}
+.qty-val{min-width:28px;text-align:center;font-weight:bold}
+.rm{background:#e74c3c;color:#fff;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;margin-left:auto}
+#cart-total{font-weight:bold;font-size:1.2em;color:#4a7c59;text-align:right;padding-top:12px;border-top:2px solid #4a7c59;margin-top:10px}
+#cart-viber-btn{background:#7360F2;color:#fff;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:bold;width:100%;cursor:pointer;margin-top:12px}
+#cart-viber-btn:disabled{background:#ccc;cursor:not-allowed}
+.products-section{background:#fff;margin:30px auto;padding:30px 20px;max-width:1400px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+h2{text-align:center;color:#4a7c59;margin-bottom:20px;font-size:1.8em}
+.search-wrap{position:relative;max-width:420px;margin:0 auto 25px}
+.search-wrap input{width:100%;padding:13px 42px 13px 42px;border:2px solid #ddd;border-radius:50px;font-size:15px;font-family:inherit;outline:none;transition:.2s}
+.search-wrap input:focus{border-color:#4a7c59;box-shadow:0 0 0 3px rgba(74,124,89,.1)}
+.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#999;font-size:15px;pointer-events:none}
+.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#eee;color:#666;border:none;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:14px;display:none;align-items:center;justify-content:center;transition:.2s}
+.search-clear:hover{background:#e74c3c;color:#fff}
+.search-clear.show{display:flex}
+.search-count{text-align:center;color:#888;font-size:.85em;margin:-15px 0 20px;min-height:20px}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px}
+.product{background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,.1);display:flex;flex-direction:column;text-align:center;border:1px solid #f0f0f0}
+.product-gallery{position:relative;height:220px;overflow:hidden;background:#eee}
+.product-gallery img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0;transition:opacity .4s}
+.product-gallery img.active{opacity:1}
+.gallery-controls{display:flex;justify-content:center;gap:6px;padding:8px 0;background:#fafafa}
+.gallery-btn{width:9px;height:9px;border-radius:50%;border:none;background:#ccc;cursor:pointer;padding:0}
+.gallery-btn.active{background:#4a7c59;transform:scale(1.3)}
+.product h3{color:#4a7c59;padding:12px;font-size:1em;min-height:50px;display:flex;align-items:center;justify-content:center}
+.price{color:#4a7c59;font-weight:bold;font-size:1.3em;padding:0 12px 10px}
+.price small{display:block;font-size:.5em;color:#888;font-weight:normal}
+.product-actions{display:flex;gap:8px;padding:0 12px 15px;margin-top:auto;align-items:center}
+.qty-input{width:54px;padding:10px 5px;border:2px solid #ddd;border-radius:8px;font-size:14px;text-align:center}
+.add-btn{flex:1;background:#4a7c59;color:#fff;border:none;padding:11px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:.9em}
+.info-btn{background:#f0f0f0;color:#555;border:none;padding:11px 13px;border-radius:8px;cursor:pointer}
+.product-description{display:none;padding:14px;background:#f8f9fa;border-top:1px solid #eee;text-align:left;font-size:.88em}
+.product-description.open{display:block}
+.product-description ul{padding-left:18px;margin:0}
+.product-description li{margin-bottom:4px}
+.empty-results{grid-column:1/-1;text-align:center;padding:50px 20px;color:#999}
+.empty-results i{font-size:3em;opacity:.3;margin-bottom:15px;display:block}
+footer{background:#4a7c59;color:#fff;text-align:center;padding:30px 20px;margin-top:30px}
+.viber-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;display:flex;align-items:center;justify-content:center;padding:15px;overflow-y:auto}
+.viber-modal-content{background:#fff;border-radius:15px;max-width:540px;width:100%;max-height:92vh;overflow-y:auto;position:relative}
+.viber-modal-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:24px;cursor:pointer;color:#666;width:36px;height:36px;border-radius:50%}
+.notification{position:fixed;bottom:20px;right:20px;background:#4a7c59;color:#fff;padding:12px 20px;border-radius:10px;font-weight:600;z-index:3000}
+.notification.error{background:#e74c3c}
+#admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;align-items:center;justify-content:center;padding:15px;overflow-y:auto}
+.adm-panel{background:#fff;border-radius:14px;width:100%;max-width:900px;max-height:95vh;display:flex;flex-direction:column;overflow:hidden}
+.adm-header{background:#4a7c59;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.adm-header h2{margin:0;font-size:1.1em;color:#fff}
+.adm-actions{display:flex;gap:8px;flex-wrap:wrap}
+.adm-btn{padding:8px 14px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px}
+.adm-btn-add{background:#27ae60;color:#fff}
+.adm-btn-export{background:#7360F2;color:#fff}
+.adm-btn-import{background:#f39c12;color:#fff}
+.adm-btn-close{background:rgba(255,255,255,.2);color:#fff}
+.adm-note{background:#fff3cd;border-left:4px solid #ffc107;padding:10px 15px;font-size:12px;color:#856404;line-height:1.5}
+.adm-list{flex:1;overflow-y:auto}
+.adm-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #eee;font-size:13px}
+.adm-row-name{flex:1;font-weight:600}
+.adm-row-price{color:#4a7c59;font-weight:bold;width:80px;text-align:right}
+.adm-mini{padding:5px 9px;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600}
+.adm-mini-edit{background:#4a7c59;color:#fff}
+.adm-mini-del{background:#e74c3c;color:#fff}
+.adm-edit-form{padding:22px;overflow-y:auto}
+.adm-edit-form h3{color:#4a7c59;margin-bottom:16px}
+.adm-field{margin-bottom:13px}
+.adm-field label{display:block;font-weight:600;font-size:12px;color:#555;margin-bottom:4px;text-transform:uppercase}
+.adm-field input,.adm-field textarea,.adm-field select{width:100%;padding:9px 11px;border:2px solid #ddd;border-radius:7px;font-size:14px;font-family:inherit;box-sizing:border-box}
+.adm-field input:focus,.adm-field textarea:focus{border-color:#4a7c59;outline:none}
+.adm-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.adm-save-row{display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:2px solid #eee}
+.adm-save-btn{flex:1;background:#4a7c59;color:#fff;padding:13px;border:none;border-radius:9px;font-weight:bold;font-size:15px;cursor:pointer}
+.adm-cancel-btn{background:#f0f0f0;color:#555;padding:13px 20px;border:none;border-radius:9px;font-weight:600;cursor:pointer}
+.adm-json-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10001;display:flex;align-items:center;justify-content:center;padding:15px}
+.adm-json-box{background:#fff;border-radius:14px;padding:22px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.adm-json-box h3{color:#4a7c59;margin-bottom:12px}
+.adm-json-box textarea{width:100%;height:250px;padding:10px;border:2px solid #ddd;border-radius:8px;font-family:Consolas,monospace;font-size:12px;box-sizing:border-box}
+.adm-json-box button{padding:11px 18px;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-top:10px;margin-right:8px;font-size:14px}
+@media(max-width:768px){
+    .top-bar{justify-content:center}
+    .products{grid-template-columns:1fr}
+    #cart-container{top:70px;right:10px;left:10px;width:auto;max-height:75vh}
+    .adm-grid2{grid-template-columns:1fr}
+    .youtube-button{top:12px;left:12px;padding:8px 14px;font-size:12px}
+    header{padding-top:70px}
+}
+</style>
+</head>
+<body>
+
+<a href="https://youtube.com/@gen_vin?si=Sv-_MztqFarN_qWV" target="_blank" class="youtube-button">
+<i class="fab fa-youtube"></i> <span class="lang" data-uk="YouTube канал" data-ru="YouTube канал">YouTube канал</span>
+</a>
+
+<header>
+<div class="top-bar">
+<a href="viber://chat?number=+380683672422" class="viber-header"><i class="fab fa-viber"></i> 068 367 24 22</a>
+<div class="language-switcher">
+<button class="lang-btn active" data-lang="uk">УКР</button>
+<button class="lang-btn" data-lang="ru">РУС</button>
+</div>
+<button class="cart-toggle" onclick="APP.toggleCart()"><i class="fas fa-shopping-cart"></i><span id="cart-count">0</span></button>
+</div>
+<h1 class="site-title" style="cursor:default;user-select:none"><span class="lang" data-uk="Геннадій Виноград" data-ru="Геннадий Виноград">Геннадій Виноград</span></h1>
+<p style="margin-top:10px"><span class="lang" data-uk="Чубучки колекційних сортів 💚" data-ru="Чубучки коллекционных сортов 💚">Чубучки колекційних сортів 💚</span></p>
+</header>
+
+<div id="cart-container">
+<h3><i class="fas fa-shopping-cart"></i> <span class="lang" data-uk="Кошик" data-ru="Корзина">Кошик</span></h3>
+<div id="cart-items"></div>
+<div id="cart-total"><span class="lang" data-uk="Сума:" data-ru="Сумма:">Сума:</span> 0 ₴</div>
+<button id="cart-viber-btn" onclick="APP.sendViberOrder()" disabled><i class="fab fa-viber"></i> <span class="lang" data-uk="Оформити" data-ru="Оформить">Оформити</span></button>
+</div>
+
+<div class="products-section">
+<h2><span class="lang" data-uk="Мої сорти" data-ru="Мои сорта">Мої сорти</span></h2>
+
+<div class="search-wrap">
+    <i class="fas fa-search search-icon"></i>
+    <input type="text" id="search-input" autocomplete="off">
+    <button class="search-clear" id="search-clear" onclick="APP.clearSearch()" aria-label="Очистити">✕</button>
+</div>
+<div class="search-count" id="search-count"></div>
+
+<div class="products" id="products-container"></div>
+</div>
+
+<footer>
+<p><i class="fas fa-seedling"></i> © 2024 <span class="lang" data-uk="Геннадій Виноград" data-ru="Геннадий Виноград">Геннадій Виноград</span> · +380 68 367 24 22</p>
+</footer>
+
+<script>
+window.PRODUCTS = [{"id":"shugra48","name":"Кишмиш Шугра 48","price":1200,"cat":"new","img":["https://i.postimg.cc/Jn71gSc0/midnight-beauty-seedless-black-grape-6843.jpg","https://i.postimg.cc/C1ZFSktm/a0f4ae4b-6c18-470f-aed3-3797ecc3ed93.jpg"],"short_uk":"Класичний чорний кишмиш преміум-класу","short_ru":"Классический черный кишмиш премиум-класса","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньоранній","среднеранний"],["Вага грона:","Вес грозди:","700–1200 г","700–1200 г"],["Колір:","Цвет:","чорний","черный"]]},{"id":"itum9","name":"Кишмиш ІТУМ 9","price":1000,"cat":"new","img":["https://i.postimg.cc/TYXHF1wt/maxresdefault.jpg"],"short_uk":"Пізній хрусткий червоний кишмиш","short_ru":"Поздний хрустящий красный кишмиш","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","пізній","поздний"],["Колір:","Цвет:","темно-червоний","темно-красный"]]},{"id":"ratatouille","name":"Кишмиш Рататуй","price":100,"cat":"","img":["https://i.postimg.cc/4dct3Tvx/cotton-candy.jpg"],"short_uk":"Ранньо-середній білий з карамельним смаком","short_ru":"Ранне-средний белый с карамельным вкусом","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","ранньо-середній","ранне-средний"],["Смак:","Вкус:","карамельний","карамельный"]]},{"id":"lamborghini","name":"Кишмиш Ламборджини","price":150,"cat":"new","img":["https://i.postimg.cc/KjkZbZt3/33a328cd-b5fe-4fea-880b-74c1dc2e9658.jpg","https://i.postimg.cc/Zqb4RPrN/bf0a91bd-315c-43cc-b5a9-7f9346e6f8d3.jpg","https://i.postimg.cc/qq3dY1d5/Lamborghini-grozd.jpg"],"short_uk":"Сучасний безкісточковий сорт з ефектним виглядом","short_ru":"Современный бессемянный сорт с эффектным видом","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","ранньо-середній","ранне-средний"],["Вага грона:","Вес грозди:","800–1500 г","800–1500 г"],["Вага ягоди:","Вес ягоды:","7–9 г","7–9 г"],["Колір:","Цвет:","золотисто-жовтий","золотисто-желтый"]]},{"id":"alice","name":"Кишмиш Аліса в Країні чудес","price":100,"cat":"new","img":["https://i.postimg.cc/cJt2dXH8/118adbdb-5f12-45f9-a550-3eac835c2582.jpg","https://i.postimg.cc/44QM4KJ8/alisa.jpg"],"short_uk":"Безнасінний сорт з привабливим товарним виглядом","short_ru":"Бессемянный сорт с привлекательным товарным видом","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньо-ранній","средне-ранний"],["Вага грона:","Вес грозди:","700–1200 г","700–1200 г"],["Вага ягоди:","Вес ягоды:","6–9 г","6–9 г"],["Колір:","Цвет:","біло-жовтий","бело-желтый"]]},{"id":"nutcracker","name":"Кишмиш Щелкунчик","price":100,"cat":"new","img":["https://i.postimg.cc/YSfrprj6/5b9a4885-891e-450d-8783-fc2aba32e221.jpg","https://i.postimg.cc/HsqdXcyc/youtu-be-Ide-4ti-F5ew-(1).jpg"],"short_uk":"Безнасінний сорт з великими гронами та хрумкою м'якоттю","short_ru":"Бессемянный сорт с крупными гроздьями и хрустящей мякотью","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньо-ранній","средне-ранний"],["Вага грона:","Вес грозди:","700–1300 г","700–1300 г"],["Колір:","Цвет:","темно-фіолетовий","темно-фиолетовый"]]},{"id":"ararat","name":"Кишмиш Арарат","price":100,"cat":"new","img":["https://i.postimg.cc/ryhYvBVB/1000010864.webp","https://i.postimg.cc/mrNmVq6T/Ararat.jpg"],"short_uk":"Безнасінний сорт з великими гронами та світлими ягодами","short_ru":"Бессемянный сорт с крупными гроздьями и светлыми ягодами","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньо-ранній","средне-ранний"],["Вага грона:","Вес грозди:","700–1200 г","700–1200 г"],["Колір:","Цвет:","біло-жовтий","бело-желтый"]]},{"id":"sherlock","name":"Кишмиш Шерлок","price":100,"cat":"new","img":["https://i.postimg.cc/ZRjHrds2/jrl1ekliqc5x2dja03mxrk5fwo0ymad4.png","https://i.postimg.cc/HsrzyjwS/fcc30bd5-08dc-4bd3-b790-0db36af86d02.jpg"],"short_uk":"Безнасінний сорт світлого типу з щільною м'якоттю","short_ru":"Бессемянный сорт светлого типа с плотной мякотью","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньо-ранній","средне-ранний"],["Вага грона:","Вес грозди:","700–1200 г","700–1200 г"],["Колір:","Цвет:","світло-зелений","светло-зеленый"]]},{"id":"scarlotta","name":"Кишмиш Шарлотта","price":100,"cat":"new","img":["https://i.postimg.cc/mDXMZfgn/0f43c0a2-b727-47df-bb2b-8ad5b33863cf.jpg","https://i.postimg.cc/T3VDLWPq/248e5507-04d0-4b25-963d-42df09b49b05.jpg"],"short_uk":"Червоний безнасінний сорт з великими товарними гронами","short_ru":"Красный бессемянный сорт с крупными товарными гроздьями","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньо-ранній","средне-ранний"],["Вага грона:","Вес грозди:","700–1300 г","700–1300 г"],["Колір:","Цвет:","червоний","красный"]]},{"id":"regal","name":"Кишмиш Регал","price":100,"cat":"new","img":["https://i.postimg.cc/PfYmgxGW/bde16043-871a-48c7-9df8-b60efa837ee4.jpg","https://i.postimg.cc/L8CftgfP/654a5412-cc0c-4244-87c0-a76c493615f6.jpg"],"short_uk":"Преміальний безнасінний сорт з натуральною безнасінністю","short_ru":"Премиальный бессемянный сорт с натуральной бессемянностью","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","ранньо-середній","ранне-средний"],["Вага грона:","Вес грозди:","500–1000 г","500–1000 г"],["Колір:","Цвет:","жовто-зелений","желто-зеленый"]]},{"id":"prime","name":"Кишмиш Прайм сідліс","price":200,"cat":"new","img":["https://i.postimg.cc/bvr5gnBR/91571ada-d939-4788-822b-4c43798a473b.jpg","https://i.postimg.cc/WzGYzwdN/a4b2b4cc-8959-4ac3-8ec7-448ac2ddeff3.jpg"],"short_uk":"Один з найраніших комерційних кишмішів з мускатним смаком","short_ru":"Один из самых ранних коммерческих кишмишей с мускатным вкусом","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","дуже ранній","очень ранний"],["Вага грона:","Вес грозди:","500–800 г","500–800 г"],["Смак:","Вкус:","мускатний","мускатный"]]},{"id":"passionfire","name":"Кишмиш Вогонь Пристрасті (ARRA)","price":200,"cat":"new","img":["https://i.postimg.cc/g05GHmNy/Australia-Fruit-Master-Euston-Farm.png","https://i.postimg.cc/02xPftdp/Chile-Agricola-Brown1.png"],"short_uk":"Преміальний безнасінний червоний сорт — заміна Flame Seedless","short_ru":"Премиальный бессемянный красный сорт — замена Flame Seedless","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","дуже ранній","очень ранний"],["Колір:","Цвет:","яскраво-червоний","ярко-красный"],["Код ARRA:","Код ARRA:","ARRA-29","ARRA-29"]]},{"id":"azov","name":"Кишмиш Азов","price":100,"cat":"new","img":["https://i.postimg.cc/X7TKmCqx/3ff7b123-6896-4063-991b-4aeed3661265.jpg","https://i.postimg.cc/FRs03bC4/033Kar-FD-00694-scaled.jpg"],"short_uk":"Сучасний безнасінний сорт раннього терміну","short_ru":"Современный бессемянный сорт раннего срока","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","ранній","ранний"],["Вага грона:","Вес грозди:","600–1000 г+","600–1000 г+"],["Колір:","Цвет:","білий","белый"]]},{"id":"vyshyvanka","name":"Кишмиш Вишиванка","price":400,"cat":"new","img":["https://i.postimg.cc/W18yv8ZF/8ecbff26-9418-4850-a9d7-5e2823121a5d.jpg","https://i.postimg.cc/1tn7DZjx/cf38ed13-590c-4d8b-9a5e-14b169a7f510.jpg"],"short_uk":"Яскравий червоний безнасінний сорт","short_ru":"Яркий красный бессемянный сорт","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","ранній","ранний"],["Колір:","Цвет:","яскраво-червоний","ярко-красный"]]},{"id":"iryska","name":"Кишмиш Іриска","price":100,"cat":"new","img":["https://i.postimg.cc/FHbYsdFk/97zrt2wo9rc5lspgojhk5e22yeqmewmk.png","https://i.postimg.cc/sXLX05mp/156cda34-1a75-4d5d-b755-0e4e4ae180e7.jpg"],"short_uk":"Надранній український сорт з карамельними нотками","short_ru":"Сверхранний украинский сорт с карамельными нотами","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","надранній","сверхранний"],["Смак:","Вкус:","карамельний","карамельный"]]},{"id":"udachniy","name":"Кишмиш Удачний","price":100,"cat":"new","img":["https://i.postimg.cc/HxdRDNZW/e428e14f-d75d-4009-884d-0de34a3aac44.jpg","https://i.postimg.cc/ZnqQ0dzV/5701795e-6ca6-4a58-bcc4-423cee3e5417.jpg"],"short_uk":"Перспективний сорт з крупними ягодами та морозостійкістю","short_ru":"Перспективный сорт с крупными ягодами и морозостойкостью","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньо-пізній","средне-поздний"],["Морозостійкість:","Морозостойкость:","-26°C","-26°C"]]},{"id":"redtaro","name":"Виноград Ред Таро","price":300,"cat":"new","img":["https://i.postimg.cc/LXvHrLTM/ba4ca06e-d4ae-4b76-8f40-bda782dbf808.jpg","https://i.postimg.cc/52vffZ3P/22c0464e-b924-45ff-b5a5-72cc8515abc8.jpg"],"short_uk":"Рідкісний червоний столовий сорт","short_ru":"Редкий красный столовый сорт","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","ранньо-середній","ранне-средний"],["Колір:","Цвет:","яскраво-червоний","ярко-красный"]]},{"id":"rubyrush","name":"Кишмиш Рубі Раш","price":0,"cat":"new","img":["https://i.postimg.cc/X7tyH6qy/isolated-cherry-crush-1.webp","https://i.postimg.cc/N0k9jy4k/arra-cherry-crush-binchuan-2-1-uai-1220x900.webp"],"short_uk":"Преміальний червоний кишмиш без хімічних обробок","short_ru":"Премиальный красный кишмиш без химических обработок","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","ранній-середній","ранний-средний"],["Колір:","Цвет:","рубіново-червоний","рубиново-красный"]]},{"id":"starlight","name":"Кишмиш Старлайт","price":1000,"cat":"new","img":["https://i.postimg.cc/5NmwsNDW/f7e18259-c860-4c8a-8543-81506d055127.jpg","https://i.postimg.cc/0yW7qX80/starlight.jpg"],"short_uk":"Ранній червоний кишмиш — мутація від Prime Seedless","short_ru":"Ранний красный кишмиш — мутация от Prime Seedless","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","дуже ранній","очень ранний"],["Колір:","Цвет:","рожево-червоний","розово-красный"]]},{"id":"redcaramel","name":"Кишмиш Красная карамелька","price":0,"cat":"new","img":["https://i.postimg.cc/28q1Zjm6/a22832b5-2cff-4ba3-a24f-c06c6a08630a.jpg","https://i.postimg.cc/hGnv69mv/c0f773ac-7ed3-483b-b9c4-10de8e352207.jpg"],"short_uk":"Надранній сорт з карамельним ароматом","short_ru":"Сверхранний сорт с карамельным ароматом","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","надранній","сверхранний"],["Аромат:","Аромат:","карамельний","карамельный"]]},{"id":"itum10","name":"Кишмиш ІТУМ 10","price":1300,"cat":"new","img":["https://i.postimg.cc/50bVfg9D/6162a2d4-f76f-44a7-965c-1a0d255c6f6a.jpg","https://i.postimg.cc/vHkw4bHW/ee69528a-6c1b-4ade-9f05-cad77d366684.jpg"],"short_uk":"Сучасний безнасінний сорт з іспанської серії ITUM","short_ru":"Современный бессемянный сорт из испанской серии ITUM","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середній-пізній","средний-поздний"],["Серія:","Серия:","ITUM","ITUM"]]},{"id":"avatar","name":"Кишмиш Аватар (Sweet Sapphire)","price":100,"cat":"new","img":["https://i.postimg.cc/8chSBv0T/46ac5108-1695-4a90-9362-be69ef872daa.jpg","https://i.postimg.cc/c4BWvQ3R/ifg-six1-9c90cde9abe9c90e52e8dddc46abd6c5.jpg"],"short_uk":"Екзотичний сорт з унікальною подовженою формою ягід","short_ru":"Экзотический сорт с уникальной удлиненной формой ягод","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","ранньо-середній","ранне-средний"],["Розмір:","Размер:","35–50 мм","35–50 мм"],["Колір:","Цвет:","темно-синій","темно-синий"]]},{"id":"chornobaivka","name":"Кишмиш Чорнобаївка","price":200,"cat":"new","img":["https://i.postimg.cc/Y0Mqy0tv/youtu-be-nlf-Ub0j7EWI.jpg"],"short_uk":"Безнасінний сорт з великими гронами","short_ru":"Бессемянный сорт с крупными гроздьями","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","ранній","ранний"],["Колір:","Цвет:","темно-синій","темно-синий"]]},{"id":"azak","name":"Кишмиш Азак","price":450,"cat":"new","img":["https://i.postimg.cc/wvFxKvSp/vynohrad-kysh-mysh-tsymus-duzhe-ranniy-zhovtyy.jpg"],"short_uk":"Ранній білий кишмиш з хрусткою соковитістю","short_ru":"Ранний белый кишмиш с хрустящей сочностью","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","дуже ранній","очень ранний"],["Колір:","Цвет:","янтарно-білий","янтарно-белый"]]},{"id":"autumnking","name":"Autumn King (Ленд Крузер)","price":250,"cat":"","img":["https://i.postimg.cc/HxsTQKzJ/autumn-king2-dbd2a2f5d5c92b152cb7ebe1b5b464f8.jpg"],"short_uk":"Пізній безнасінний сорт американської селекції","short_ru":"Поздний бессемянный сорт американской селекции","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","пізній","поздний"],["Походження:","Происхождение:","США","США"]]},{"id":"tatami","name":"Татамі","price":450,"cat":"new","img":["https://i.postimg.cc/DwKRBHTW/fe62c7e6-30d3-427a-b0cf-bdf00b5aa7e9.jpg"],"short_uk":"Унікальний преміальний сорт з японським шармом","short_ru":"Уникальный премиальный сорт с японским шармом","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середній-пізній","средний-поздний"],["Статус:","Статус:","колекційний","коллекционный"]]},{"id":"redking","name":"Ред Кінг","price":400,"cat":"","img":["https://i.postimg.cc/4xPPTFrP/1b8006.jpg","https://i.postimg.cc/NjDDwPWJ/31c7e022-0426-4851-bd65-3abf09eb5176.jpg"],"short_uk":"Королівський червоний хрусткий гігант","short_ru":"Королевский красный хрустящий гигант","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середній-пізній","средний-поздний"],["Вага ягоди:","Вес ягоды:","12–16 г","12–16 г"]]},{"id":"mango","name":"Кишмиш Манго","price":600,"cat":"new","img":["https://i.postimg.cc/W3Rb2jqv/2a396575-fe5a-4d48-b540-55be6334824b.jpg","https://i.postimg.cc/L5291TVG/3cb9b800-384a-4cac-a927-2c0132b87eb4.jpg"],"short_uk":"Екзотичний виноград з ароматом тропічного манго","short_ru":"Экзотический виноград с ароматом тропического манго","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середній","средний"],["Аромат:","Аромат:","манго","манго"]]},{"id":"grape-dream","name":"Грейп Дрім","price":450,"cat":"new","img":["https://i.postimg.cc/rwd8WvMg/26c6a20e-8063-4d68-985f-cb7c223b54cc.jpg","https://i.postimg.cc/vBvMbyt8/34ca961b-c097-42ac-b058-c86a097ebb5b.jpg"],"short_uk":"Мрія про ідеальний кишмиш з карамельними нотками","short_ru":"Мечта об идеальном кишмише с карамельными нотками","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середній","средний"],["Смак:","Вкус:","карамельний","карамельный"]]},{"id":"podjaka","name":"Кишмиш Подяка Полякам","price":650,"cat":"new","img":["https://i.postimg.cc/rwW5jZJL/666080af-e400-4f89-ab53-5bea1f5936ce.jpg","https://i.postimg.cc/8zhrMJ1m/dd9a44b8-c0dc-4485-bc57-b0e0d7a9b3d3.jpg"],"short_uk":"Перспективний сорт з великими соковитими ягодами","short_ru":"Перспективный сорт с крупными сочными ягодами","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","ранньо-середній","ранне-средний"],["Колір:","Цвет:","насичено-червоний","насыщенно-красный"]]},{"id":"pandora","name":"Кишмиш Пандора (Adora)","price":400,"cat":"new","img":["https://i.postimg.cc/HsW5TTXM/adora-uvas-moyca.jpg","https://i.postimg.cc/RVCfvvK7/image.jpg"],"short_uk":"Король пізніх чорних кишмишів з велетенськими ягодами","short_ru":"Король поздних черных кишмишей с гигантскими ягодами","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","пізній","поздний"],["Колір:","Цвет:","фіолетово-чорний","фиолетово-черный"]]},{"id":"kivin","name":"Кишмиш Ківін","price":450,"cat":"new","img":["https://i.postimg.cc/63N739Jy/b477a90a-1324-47a8-8b98-a734af057be0.jpg","https://i.postimg.cc/GtghkRN2/Bez-nazvania.jpg"],"short_uk":"Рання біла перлина російської селекції","short_ru":"Ранняя белая жемчужина российской селекции","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","дуже ранній","очень ранний"],["Колір:","Цвет:","біло-жовтий","бело-желтый"]]},{"id":"celebration","name":"Кишмиш Світ Селебрейшен","price":800,"cat":"new","img":["https://i.postimg.cc/5t8BpKbk/d3bc1a75-9e17-4402-a771-cbdc026f6027.jpg","https://i.postimg.cc/2SNhZnB9/Sweet-Celebration.webp"],"short_uk":"Преміальний червоний кишмиш з яскравими великими ягодами","short_ru":"Премиальный красный кишмиш с яркими крупными ягодами","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середній-пізній","средний-поздний"],["Колір:","Цвет:","рожево-червоний","розово-красный"]]},{"id":"compassion","name":"Кишмиш Компешен","price":950,"cat":"new","img":["https://i.postimg.cc/yxR3YkWY/a60e2b97-8e06-4051-9712-14d36a89da6a.jpg","https://i.postimg.cc/k40DZqwr/f524cdef-87ee-4ca8-8c2c-8e999c29e1ae.jpg"],"short_uk":"Білий кишмиш з унікальним мускатним смаком","short_ru":"Белый кишмиш с уникальным мускатным вкусом","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середній","средний"],["Смак:","Вкус:","мускатний","мускатный"]]},{"id":"autumnpearl","name":"Кишмиш Отем Перл","price":700,"cat":"new","img":["https://i.postimg.cc/PxzBGMQs/5214a390-1bae-4d65-9ea2-7ed5415909ae.jpg","https://i.postimg.cc/Tw9HN3T3/x-Autumn-pearl2-jpg-pagespeed-ic-KUUVWB4k-Tz.webp"],"short_uk":"Ізраїльський сорт з округлими великими ягодами","short_ru":"Израильский сорт с округлыми крупными ягодами","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньо-пізній","средне-поздний"],["Колір:","Цвет:","рожево-червоний","розово-красный"]]},{"id":"pristine","name":"Кишмиш Прістін","price":300,"cat":"new","img":["https://i.postimg.cc/05t9b879/1fd4a9fe-1cf2-4b84-9a11-d30f706c02f3.jpg","https://i.postimg.cc/T2yWdHWB/bunch-lightgreen-grapes-glistening-water-260nw-2680348265.webp"],"short_uk":"Ідеальний хрусткий зелений преміум-кішмиш","short_ru":"Идеальный хрустящий зеленый премиум-кишмиш","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","пізній","поздний"],["Колір:","Цвет:","світло-зелений","светло-зеленый"]]},{"id":"duchesse","name":"Кишмиш Дюшес","price":300,"cat":"new","img":["https://i.postimg.cc/Dzg1GJ2q/c57a795a-70cc-4966-a5c9-83d5c0ffab6b.jpg","https://i.postimg.cc/Bn5FWL13/f99d4546-ce3b-47d4-b0e6-cc8c73ef1228.jpg"],"short_uk":"Королівський білий кишмиш з мускатним шармом","short_ru":"Королевский белый кишмиш с мускатным шармом","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньо-ранній","средне-ранний"],["Смак:","Вкус:","мускатний","мускатный"]]},{"id":"sweetglobe","name":"Кишмиш Солодкий Світ","price":300,"cat":"new","img":["https://i.postimg.cc/sxRB03Dd/0ed26194-c389-4bc2-ab23-d0e4ddeedbd6.jpg","https://i.postimg.cc/CMjnnnmz/IFG-10-Sweet-Globe.jpg"],"short_uk":"Преміальний хрусткий зелений кишмиш з відмінним зберіганням","short_ru":"Премиальный хрустящий зеленый кишмиш с отличным хранением","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середній","средний"],["Колір:","Цвет:","світло-зелений","светло-зеленый"]]},{"id":"timco","name":"Кишмиш Тімко","price":100,"cat":"new","img":["https://i.postimg.cc/HsqNZKbz/8c5f9feb-cc4d-4c7e-9dfe-e9cb80cb53dc.jpg","https://i.postimg.cc/FKZnKHwh/58A1225-scaled-1-1024x683.jpg"],"short_uk":"Король пізніх червоних гігантів","short_ru":"Король поздних красных гигантов","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньо-пізній","средне-поздний"],["Колір:","Цвет:","рожево-червоний","розово-красный"]]},{"id":"nirvana","name":"Кишмиш Нірвана","price":300,"cat":"new","img":["https://i.postimg.cc/pdWMC4ts/6d17b368-b2d3-483f-95d3-4914b67b6ca3.jpg","https://i.postimg.cc/14hLqYHK/selkuncik2.jpg"],"short_uk":"Елітний безнасінний сорт з морозостійкістю","short_ru":"Элитный бессемянный сорт с морозостойкостью","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середній","средний"],["Морозостійкість:","Морозостойкость:","-23°C","-23°C"]]},{"id":"ARRA Sugar Drop ","name":"кишмиш Джавелін","price":350,"cat":"","img":["https://i.postimg.cc/g0PNfzvN/Arra-Sugar-Drop-Egypt.jpg","https://i.postimg.cc/pdYqvwZQ/Foto-04-1024x940.jpg"],"short_uk":"Преміальний білий безнасінний виноград","short_ru":"Премиальный белый бессемянный виноград","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","дуже ранній","очень ранний"],["Код:","Код:","ARRA 30","ARRA 30"]]},{"id":"titan","name":"Кишмиш Титан","price":350,"cat":"new","img":["https://i.postimg.cc/9XKJLxkt/4dc82cff-d9d6-4802-b87c-ea20af51b0f7.jpg","https://i.postimg.cc/mgNj2TrZ/5e4f2a89-428e-4e2f-894b-3bac63898dcf.jpg"],"short_uk":"Справжній титан серед безнасінних гігантів","short_ru":"Настоящий титан среди бессемянных гигантов","desc_uk":"","desc_ru":"","specs":[["Термін:","Срок:","середньоранній","среднеранний"],["Вага ягоди:","Вес ягоды:","14–18 г","14–18 г"]]},{"id":"carlita","name":"Кишмиш Карліта","price":300,"cat":"new","img":["https://i.postimg.cc/DfRdMKGF/carlita2-a61422a450ea2184ddb55a2b5cd0e30d.jpg"],"short_uk":"Інноваційний безнасінний сорт з яскраво-червоними ягодами","short_ru":"Инновационный бессемянный сорт с ярко-красными ягодами","desc_uk":"","desc_ru":"","specs":[["Вага ягоди:","Вес ягоды:","7–12 г","7–12 г"],["Колір:","Цвет:","яскраво-червоний","ярко-красный"]]},{"id":"arra34","name":"АРРА 34 (ARRA Jumbo)","price":800,"cat":"new","img":["https://i.postimg.cc/Xr6JR4TX/ARRA-YUMBO-5.jpg","https://i.postimg.cc/RWxFk4jF/ARRA-Yumbo-San-Luca-OP-Giuliano-3.jpg"],"short_uk":"Крупний білий безсемянний кишмиш з хрусткою м'якоттю і фруктовими нотками","short_ru":"Крупный белый бессемянный кишмиш с хрустящей мякотью и фруктовыми нотками","desc_uk":"АРРА 34 (ARRA Jumbo) — преміальний безсемянний сорт винограда селекції ARRA. Відрізняється великими подовженими ягодами пальцевидної форми, високою товарністю та чудовим смаком. При повному дозріванні з'являються легкі нотки яблука та карамелі.","desc_ru":"АРРА 34 (ARRA Jumbo) — премиальный бессемянный сорт винограда селекции ARRA. Отличается крупными удлиненными ягодами пальцевидной формы, высокой товарностью и отличным вкусом. При полном созревании появляются легкие нотки яблока и карамели.","specs":[["Тип:","Тип:","кишмиш (I-II клас)","кишмиш (I-II класс)"],["Термін дозрівання:","Срок созревания:","середній/середньо-пізній","средний/средне-поздний"],["Вага грона:","Вес грозди:","0,7–1,6 кг","0,7–1,6 кг"],["Розмір ягоди:","Размер ягоды:","22–24 мм","22–24 мм"],["Вага ягоди:","Вес ягоды:","6–15 г","6–15 г"],["Колір:","Цвет:","білий/світло-зелений","белый/светло-зеленый"],["М'якоть:","Мякоть:","пружна, хрустка","плотная, хрустящая"],["Смак:","Вкус:","солодкий, фруктовий","сладкий, фруктовый"],["Кожица:","Кожица:","тонка, їстівна","тонкая, съедобная"]]}];
+</script>
+
+<script>
+(function(){
+'use strict';
+
+var storage = {
+    get: function(k) { try { return localStorage.getItem(k); } catch(e) { return null; } },
+    set: function(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
+};
+
+window.onerror = function(msg, url, line) {
+    var b = document.getElementById('err-banner');
+    if (!b) {
+        b = document.createElement('div');
+        b.id = 'err-banner';
+        b.innerHTML = '<button onclick="this.parentNode.remove()">✕</button><strong>⚠ Помилка:</strong> <span id="err-msg"></span><br><small>F12 → Console для деталей</small>';
+        document.body.insertBefore(b, document.body.firstChild);
+    }
+    document.getElementById('err-msg').textContent = msg + ' (рядок ' + line + ')';
+};
+
+var PRODUCTS = window.PRODUCTS || [];
+if (!PRODUCTS.length) {
+    document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:Arial"><h2 style="color:red">Товари не завантажено</h2></div>';
+    return;
+}
+
+var currentLanguage = storage.get('grapeLanguage') || 'uk';
+var currentSearch = '';
+var cart = [];
+try { cart = JSON.parse(storage.get('grapeCart') || '[]'); } catch(e) { cart = []; }
+var PHONE = '+380683672422';
+
+function saveCart() { storage.set('grapeCart', JSON.stringify(cart)); }
+function fmt(n) { return n.toLocaleString('uk-UA'); }
+function esc(s) { return String(s || '').replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function T(uk, ru) { return currentLanguage === 'uk' ? uk : ru; }
+
+function applyLanguageToStatic() {
+    document.querySelectorAll('.lang').forEach(function(el) {
+        var t = el.getAttribute('data-' + currentLanguage);
+        if (t) el.textContent = t;
+    });
+    var inp = document.getElementById('search-input');
+    if (inp) inp.placeholder = T('Пошук за назвою...', 'Поиск по названию...');
+}
+
+function filterProducts() {
+    if (!currentSearch) return PRODUCTS;
+    var q = currentSearch.toLowerCase().trim();
+    if (!q) return PRODUCTS;
+    return PRODUCTS.filter(function(p) {
+        var text = [
+            p.name || '',
+            p.short_uk || '',
+            p.short_ru || '',
+            p.desc_uk || '',
+            p.desc_ru || ''
+        ].join(' ').toLowerCase();
+        return text.indexOf(q) !== -1;
+    });
+}
+
+function renderProducts() {
+    var c = document.getElementById('products-container');
+    if (!c) return;
+    var list = filterProducts();
+    var countEl = document.getElementById('search-count');
+    if (!list.length) {
+        c.innerHTML = '<div class="empty-results"><i class="fas fa-search"></i><p>' + T('Нічого не знайдено', 'Ничего не найдено') + '</p><p style="font-size:.85em;margin-top:8px">' + T('Спробуйте інший запит', 'Попробуйте другой запрос') + '</p></div>';
+        if (countEl) countEl.textContent = '';
+        return;
+    }
+    c.innerHTML = list.map(renderCard).join('');
+    if (countEl) {
+        if (currentSearch) {
+            countEl.textContent = T('Знайдено: ', 'Найдено: ') + list.length + T(' із ', ' из ') + PRODUCTS.length;
+        } else {
+            countEl.textContent = T('Всього сортів: ', 'Всего сортов: ') + PRODUCTS.length;
+        }
+    }
+}
+
+function renderCard(p) {
+    var imgs = (p.img || []).map(function(src, i) {
+        return '<img src="' + src + '" alt="' + esc(p.name) + '" class="' + (i === 0 ? 'active' : '') + '" loading="lazy">';
+    }).join('');
+    var dots = (p.img || []).length > 1 ? '<div class="gallery-controls">' + p.img.map(function(_, i) {
+        return '<button class="gallery-btn ' + (i === 0 ? 'active' : '') + '" onclick="APP.changePhoto(\'' + p.id + '\',' + i + ')"></button>';
+    }).join('') + '</div>' : '';
+    var badge = p.cat === 'new' ? ' <span style="background:#ffd54f;color:#6b4a00;font-size:.65em;padding:2px 6px;border-radius:10px">NEW</span>' : '';
+    return '<div class="product">' +
+        '<div class="product-gallery" data-gallery-id="' + p.id + '">' + imgs + '</div>' +
+        dots +
+        '<h3>' + esc(p.name) + badge + '</h3>' +
+        '<div class="price">' + fmt(p.price) + ' ₴<small>' + T('за 1 черенок','за 1 черенок') + '</small></div>' +
+        '<div class="product-actions">' +
+            '<input type="number" min="1" value="1" class="qty-input" id="qty-' + p.id + '">' +
+            '<button class="info-btn" onclick="APP.toggleDesc(\'' + p.id + '\',this)"><i class="fas fa-info-circle"></i></button>' +
+            '<button class="add-btn" onclick="APP.addToCart(\'' + p.id + '\')"><i class="fas fa-cart-plus"></i> ' + T('Додати','Добавить') + '</button>' +
+        '</div>' +
+        '<div class="product-description" id="desc-' + p.id + '">' + renderDesc(p) + '</div>' +
+        '</div>';
+}
+
+function renderDesc(p) {
+    var html = '';
+    if (p.specs && p.specs.length) {
+        html += '<ul>';
+        p.specs.forEach(function(s) {
+            var label = currentLanguage === 'uk' ? s[0] : s[1];
+            var value = currentLanguage === 'uk' ? s[2] : s[3];
+            html += '<li><strong>' + esc(label) + '</strong> ' + esc(value) + '</li>';
+        });
+        html += '</ul>';
+    }
+    var desc = p['desc_' + currentLanguage] || p.desc_uk || '';
+    if (desc) html += '<p style="margin-top:8px;padding-top:8px;border-top:1px dashed #ddd;color:#555">' + esc(desc) + '</p>';
+    return html;
+}
+
+function changePhoto(id, idx) {
+    var g = document.querySelector('[data-gallery-id="' + id + '"]');
+    if (!g) return;
+    g.querySelectorAll('img').forEach(function(im, i) { im.classList.toggle('active', i === idx); });
+    var prod = g.closest('.product');
+    if (prod) prod.querySelectorAll('.gallery-btn').forEach(function(b, i) { b.classList.toggle('active', i === idx); });
+}
+
+function toggleDesc(id, btn) {
+    var d = document.getElementById('desc-' + id);
+    if (!d) return;
+    var open = d.classList.contains('open');
+    document.querySelectorAll('.product-description.open').forEach(function(x) { x.classList.remove('open'); });
+    if (!open) { d.classList.add('open'); btn.querySelector('i').className = 'fas fa-times'; }
+    else btn.querySelector('i').className = 'fas fa-info-circle';
+}
+
+function onSearchInput(e) {
+    currentSearch = e.target.value;
+    var clearBtn = document.getElementById('search-clear');
+    if (clearBtn) clearBtn.classList.toggle('show', currentSearch.length > 0);
+    renderProducts();
+}
+
+function clearSearch() {
+    currentSearch = '';
+    var inp = document.getElementById('search-input');
+    if (inp) { inp.value = ''; inp.focus(); }
+    var clearBtn = document.getElementById('search-clear');
+    if (clearBtn) clearBtn.classList.remove('show');
+    renderProducts();
+}
+
+function addToCart(id) {
+    var p = PRODUCTS.find(function(x) { return x.id === id; });
+    if (!p) return;
+    var inp = document.getElementById('qty-' + id);
+    var qty = Math.max(1, parseInt(inp ? inp.value : 1) || 1);
+    var ex = cart.find(function(x) { return x.id === id; });
+    if (ex) ex.qty += qty;
+    else cart.push({ id: id, qty: qty });
+    saveCart();
+    renderCart();
+    notify(T('Додано: ','Добавлено: ') + p.name + ' (' + qty + ' шт.)');
+    var cc = document.getElementById('cart-container');
+    if (!cc.classList.contains('show')) { cc.classList.add('show'); setTimeout(function() { cc.classList.remove('show'); }, 3500); }
+}
+
+function updateQty(id, delta) {
+    var it = cart.find(function(x) { return x.id === id; });
+    if (!it) return;
+    it.qty += delta;
+    if (it.qty < 1) { cart = cart.filter(function(x) { return x.id !== id; }); }
+    saveCart(); renderCart();
+}
+
+function removeFromCart(id) {
+    cart = cart.filter(function(x) { return x.id !== id; });
+    saveCart(); renderCart();
+}
+
+function renderCart() {
+    var ci = document.getElementById('cart-items'), ct = document.getElementById('cart-total'), cc = document.getElementById('cart-count'), vb = document.getElementById('cart-viber-btn');
+    if (!cart.length) {
+        ci.innerHTML = '<p style="text-align:center;padding:20px;color:#666">' + T('Поки що порожньо','Пока пусто') + '</p>';
+        ct.innerHTML = T('Сума:','Сумма:') + ' 0 ₴';
+        cc.style.display = 'none';
+        vb.disabled = true;
+        return;
+    }
+    var total = 0, count = 0;
+    ci.innerHTML = cart.map(function(it) {
+        var p = PRODUCTS.find(function(x) { return x.id === it.id; });
+        if (!p) return '';
+        var sum = p.price * it.qty;
+        total += sum; count += it.qty;
+        return '<div class="cart-item"><div class="cart-item-name">' + esc(p.name) + '</div>' +
+            '<div class="cart-item-sub">' + fmt(p.price) + ' ₴ × ' + it.qty + ' = <strong>' + fmt(sum) + ' ₴</strong></div>' +
+            '<div class="cart-item-controls"><button class="qty-btn" onclick="APP.updateQty(\'' + it.id + '\',-1)">−</button>' +
+            '<span class="qty-val">' + it.qty + '</span>' +
+            '<button class="qty-btn" onclick="APP.updateQty(\'' + it.id + '\',1)">+</button>' +
+            '<button class="rm" onclick="APP.removeFromCart(\'' + it.id + '\')">×</button></div></div>';
+    }).join('');
+    ct.innerHTML = T('Сума:','Сумма:') + ' <strong>' + fmt(total) + ' ₴</strong>';
+    cc.textContent = count;
+    cc.style.display = 'flex';
+    vb.disabled = false;
+}
+
+function toggleCart() {
+    document.getElementById('cart-container').classList.toggle('show');
+}
+
+function changeLanguage(lang) {
+    if (lang === currentLanguage) return;
+    currentLanguage = lang;
+    storage.set('grapeLanguage', lang);
+    document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
+    applyLanguageToStatic();
+    renderProducts();
+    renderCart();
+}
+
+function notify(msg, type) {
+    document.querySelectorAll('.notification').forEach(function(n) { n.remove(); });
+    var n = document.createElement('div');
+    n.className = 'notification' + (type === 'error' ? ' error' : '');
+    n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(function() { n.remove(); }, 2800);
+}
+
+function sendViberOrder() {
+    if (!cart.length) { notify(T('Кошик порожній!','Корзина пуста!'), 'error'); return; }
+    var total = 0;
+    var summary = cart.map(function(it) {
+        var p = PRODUCTS.find(function(x) { return x.id === it.id; });
+        if (!p) return '';
+        var sum = p.price * it.qty;
+        total += sum;
+        return '• ' + p.name + ' — ' + it.qty + ' шт. × ' + fmt(p.price) + ' = ' + fmt(sum) + ' грн';
+    }).filter(Boolean).join('\n');
+
+    var m = document.createElement('div');
+    m.className = 'viber-modal';
+    m.id = 'order-modal';
+    m.innerHTML = '<div class="viber-modal-content"><button class="viber-modal-close" onclick="document.getElementById(\'order-modal\').remove()">&times;</button>' +
+        '<div style="padding:25px">' +
+        '<h2 style="color:#4a7c59;margin-bottom:18px">' + T('Оформлення','Оформление') + '</h2>' +
+        '<div style="background:#f8f9fa;padding:14px;border-radius:10px;border-left:4px solid #4a7c59;font-size:13px;margin-bottom:15px">' +
+        '<strong>' + T('Замовлення:','Заказ:') + '</strong><pre style="white-space:pre-wrap;font-family:inherit;margin:6px 0">' + summary + '</pre>' +
+        '<div style="text-align:right;font-weight:bold">' + T('Всього:','Итого:') + ' ' + fmt(total) + ' грн</div></div>' +
+        '<form onsubmit="APP.processOrder(event)">' +
+        '<div style="margin-bottom:12px"><label style="font-weight:600;font-size:.9em">' + T('Ім\'я','Имя') + ' *</label><input type="text" id="f-name" required style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;font-size:15px"></div>' +
+        '<div style="margin-bottom:12px"><label style="font-weight:600;font-size:.9em">' + T('Телефон','Телефон') + ' *</label><input type="tel" id="f-phone" required placeholder="+380..." style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;font-size:15px"></div>' +
+        '<div style="margin-bottom:12px"><label style="font-weight:600;font-size:.9em">' + T('Місто','Город') + ' *</label><input type="text" id="f-city" required style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;font-size:15px"></div>' +
+        '<div style="margin-bottom:12px"><label style="font-weight:600;font-size:.9em">' + T('Відділення НП','Отделение НП') + ' *</label><input type="text" id="f-np" required style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;font-size:15px"></div>' +
+        '<div style="margin-bottom:15px"><label style="font-weight:600;font-size:.9em">' + T('Коментар','Комментарий') + '</label><textarea id="f-comment" rows="2" style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;font-size:15px"></textarea></div>' +
+        '<button type="submit" style="width:100%;background:#7360F2;color:#fff;padding:14px;border:none;border-radius:10px;font-weight:bold;font-size:15px;cursor:pointer"><i class="fab fa-viber"></i> ' + T('Відправити','Отправить') + '</button>' +
+        '</form></div></div>';
+    document.body.appendChild(m);
+    setTimeout(function() { document.getElementById('f-name').focus(); }, 100);
+}
+
+function processOrder(e) {
+    e.preventDefault();
+    var d = {
+        name: document.getElementById('f-name').value.trim(),
+        phone: document.getElementById('f-phone').value.trim(),
+        city: document.getElementById('f-city').value.trim(),
+        np: document.getElementById('f-np').value.trim(),
+        comment: document.getElementById('f-comment').value.trim()
+    };
+    var total = 0, lines = '';
+    cart.forEach(function(it) {
+        var p = PRODUCTS.find(function(x) { return x.id === it.id; });
+        if (!p) return;
+        var sum = p.price * it.qty;
+        total += sum;
+        lines += '✅ ' + p.name + '\n   ' + T('Кількість','Количество') + ': ' + it.qty + ' шт.\n   ' + fmt(p.price) + ' грн × ' + it.qty + ' = ' + fmt(sum) + ' грн\n\n';
+    });
+    var text = T('🍇 ЗАМОВЛЕННЯ ЧЕРЕНКІВ 🍇','🍇 ЗАКАЗ ЧЕРЕНКОВ 🍇') + '\n\n' + lines +
+        '💰 ' + T('Загальна сума','Общая сумма') + ': ' + fmt(total) + ' грн\n\n' +
+        '👤 ' + d.name + '\n📞 ' + d.phone + '\n📍 ' + d.city + '\n📦 ' + d.np + '\n';
+    if (d.comment) text += '💬 ' + d.comment + '\n';
+    document.getElementById('order-modal').remove();
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(showSuccess).catch(function() { fallbackCopy(text); });
+    } else { fallbackCopy(text); }
+}
+
+function fallbackCopy(t) {
+    var ta = document.createElement('textarea');
+    ta.value = t; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showSuccess(); } catch(e) { alert(t); }
+    document.body.removeChild(ta);
+}
+
+function showSuccess() {
+    var m = document.createElement('div');
+    m.className = 'viber-modal';
+    m.id = 'success-modal';
+    m.innerHTML = '<div class="viber-modal-content"><button class="viber-modal-close" onclick="document.getElementById(\'success-modal\').remove()">&times;</button>' +
+        '<div style="padding:30px;text-align:center">' +
+        '<i class="fas fa-check-circle" style="font-size:56px;color:#4CAF50;margin-bottom:15px;display:block"></i>' +
+        '<h2 style="color:#4a7c59">' + T('Замовлення готове!','Заказ готов!') + '</h2>' +
+        '<p style="color:#666;margin:12px 0">' + T('Текст скопійовано. Відкрийте Viber і вставте.','Текст скопирован. Откройте Viber и вставьте.') + '</p>' +
+        '<button style="background:#7360F2;color:#fff;padding:14px;border:none;border-radius:25px;font-weight:bold;font-size:16px;cursor:pointer;width:100%;margin-top:10px" onclick="location.href=\'viber://chat?number=' + encodeURIComponent(PHONE) + '\'"><i class="fab fa-viber"></i> ' + T('ВІДКРИТИ VIBER','ОТКРЫТЬ VIBER') + '</button>' +
+        '<button style="background:transparent;color:#666;padding:11px;border:2px solid #ddd;border-radius:25px;font-size:14px;cursor:pointer;width:100%;margin-top:10px" onclick="document.getElementById(\'success-modal\').remove()">' + T('Закрити','Закрыть') + '</button>' +
+        '</div></div>';
+    document.body.appendChild(m);
+}
+
+window.APP = {
+    changePhoto: changePhoto,
+    toggleDesc: toggleDesc,
+    addToCart: addToCart,
+    updateQty: updateQty,
+    removeFromCart: removeFromCart,
+    toggleCart: toggleCart,
+    sendViberOrder: sendViberOrder,
+    processOrder: processOrder,
+    clearSearch: clearSearch
+};
+
+// ============ ADMIN ============
+var admWorking = [];
+var admEditing = null;
+var admDirty = false;
+
+function openAdmin() {
+    if (document.getElementById('admin-overlay')) return;
+    admWorking = JSON.parse(JSON.stringify(PRODUCTS));
+    admEditing = null;
+    admDirty = false;
+    var el = document.createElement('div');
+    el.id = 'admin-overlay';
+    el.innerHTML = '<div class="adm-panel">' +
+        '<div class="adm-header"><h2>⚙️ Адмінка</h2>' +
+        '<div class="adm-actions">' +
+        '<button class="adm-btn adm-btn-add" onclick="ADMIN.addNew()">+ Додати</button>' +
+        '<button class="adm-btn adm-btn-import" onclick="ADMIN.importJSON()">📥 Імпорт JSON</button>' +
+        '<button class="adm-btn adm-btn-export" onclick="ADMIN.exportJSON()">📤 Експорт JSON</button>' +
+        '<button class="adm-btn adm-btn-export" onclick="ADMIN.exportHTML()">⬇ Скачати HTML</button>' +
+        '<button class="adm-btn adm-btn-close" onclick="ADMIN.close()">✕ Закрити</button>' +
+        '</div></div>' +
+        '<div class="adm-note">Змініть товари → «Скачати HTML» → замініть файл → Commit + Push. Або «Експорт JSON» для бекапу.</div>' +
+        '<div class="adm-list" id="adm-list"></div></div>';
+    document.body.appendChild(el);
+    document.body.style.overflow = 'hidden';
+    renderAdmList();
+}
+
+function renderAdmList() {
+    var list = document.getElementById('adm-list');
+    if (!list) return;
+    list.innerHTML = admWorking.map(function(p, i) {
+        return '<div class="adm-row">' +
+            '<div class="adm-row-name">' + (i+1) + '. ' + esc(p.name) + '</div>' +
+            '<div class="adm-row-price">' + fmt(p.price) + ' ₴</div>' +
+            '<button class="adm-mini adm-mini-edit" onclick="ADMIN.edit(' + i + ')">✎</button>' +
+            '<button class="adm-mini adm-mini-del" onclick="ADMIN.del(' + i + ')">×</button>' +
+            '</div>';
+    }).join('');
+}
+
+function renderAdmEdit() {
+    var list = document.getElementById('adm-list');
+    if (!list) return;
+    if (admEditing === null) { renderAdmList(); return; }
+    var p = admWorking[admEditing];
+    if (!p) { admEditing = null; renderAdmList(); return; }
+    var specsHtml = (p.specs || []).map(function(s, i) {
+        return '<tr><td><input type="text" value="' + escA(s[0]||'') + '" oninput="ADMIN.setSpec('+i+',0,this.value)" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px"></td>' +
+            '<td><input type="text" value="' + escA(s[1]||'') + '" oninput="ADMIN.setSpec('+i+',1,this.value)" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px"></td>' +
+            '<td><input type="text" value="' + escA(s[2]||'') + '" oninput="ADMIN.setSpec('+i+',2,this.value)" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px"></td>' +
+            '<td><input type="text" value="' + escA(s[3]||'') + '" oninput="ADMIN.setSpec('+i+',3,this.value)" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px"></td>' +
+            '<td><button onclick="ADMIN.rmSpec('+i+')" style="background:#e74c3c;color:#fff;border:none;width:22px;height:22px;border-radius:4px;cursor:pointer;font-weight:bold">×</button></td></tr>';
+    }).join('');
+    list.innerHTML = '<div class="adm-edit-form">' +
+        '<h3>✎ Редагування</h3>' +
+        '<div class="adm-grid2">' +
+        '<div class="adm-field"><label>ID (латиниця)</label><input type="text" value="' + escA(p.id) + '" oninput="ADMIN.setField(\'id\',this.value)"></div>' +
+        '<div class="adm-field"><label>Ціна ₴</label><input type="number" value="' + p.price + '" oninput="ADMIN.setField(\'price\',parseInt(this.value)||0)"></div>' +
+        '</div>' +
+        '<div class="adm-field"><label>Назва</label><input type="text" value="' + escA(p.name) + '" oninput="ADMIN.setField(\'name\',this.value)"></div>' +
+        '<div class="adm-field"><label>Категорія</label><select onchange="ADMIN.setField(\'cat\',this.value)">' +
+            '<option value=""' + (p.cat===''?' selected':'') + '>Звичайний</option>' +
+            '<option value="new"' + (p.cat==='new'?' selected':'') + '>Новинка</option></select></div>' +
+        '<div class="adm-field"><label>Фото (URL, кожен з нового рядка)</label><textarea rows="3" oninput="ADMIN.setField(\'img\',this.value.split(\'\\n\').map(function(s){return s.trim()}).filter(Boolean))">' + escA((p.img||[]).join('\n')) + '</textarea></div>' +
+        '<div class="adm-grid2">' +
+        '<div class="adm-field"><label>Коротко UK</label><textarea oninput="ADMIN.setField(\'short_uk\',this.value)">' + escA(p.short_uk||'') + '</textarea></div>' +
+        '<div class="adm-field"><label>Коротко RU</label><textarea oninput="ADMIN.setField(\'short_ru\',this.value)">' + escA(p.short_ru||'') + '</textarea></div>' +
+        '</div>' +
+        '<div class="adm-grid2">' +
+        '<div class="adm-field"><label>Опис UK</label><textarea oninput="ADMIN.setField(\'desc_uk\',this.value)">' + escA(p.desc_uk||'') + '</textarea></div>' +
+        '<div class="adm-field"><label>Опис RU</label><textarea oninput="ADMIN.setField(\'desc_ru\',this.value)">' + escA(p.desc_ru||'') + '</textarea></div>' +
+        '</div>' +
+        '<div class="adm-field"><label>Характеристики</label>' +
+        '<table style="width:100%;font-size:11px"><thead><tr><th>UK label</th><th>RU label</th><th>UK value</th><th>RU value</th><th></th></tr></thead><tbody>' + specsHtml + '</tbody></table>' +
+        '<button onclick="ADMIN.addSpec()" style="margin-top:6px;padding:7px;background:#f0f0f0;border:2px dashed #bbb;border-radius:6px;cursor:pointer;width:100%;font-size:12px;font-weight:600">+ Додати характеристику</button></div>' +
+        '<div class="adm-save-row"><button class="adm-save-btn" onclick="ADMIN.save()">✓ Зберегти</button>' +
+        '<button class="adm-cancel-btn" onclick="ADMIN.cancel()">Скасувати</button></div>' +
+        '</div>';
+}
+
+function escA(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+var ADMIN = {
+    close: function() {
+        if (admDirty && !confirm('Незбережені зміни. Закрити?')) return;
+        var el = document.getElementById('admin-overlay');
+        if (el) el.remove();
+        document.body.style.overflow = '';
+    },
+    edit: function(i) { admEditing = i; renderAdmEdit(); },
+    cancel: function() { admEditing = null; renderAdmList(); },
+    setField: function(k, v) {
+        if (admEditing === null) return;
+        admWorking[admEditing][k] = v;
+        admDirty = true;
+    },
+    setSpec: function(i, f, v) {
+        if (admEditing === null) return;
+        var p = admWorking[admEditing];
+        if (!p.specs) p.specs = [];
+        if (!p.specs[i]) p.specs[i] = ['','','',''];
+        p.specs[i][f] = v;
+        admDirty = true;
+    },
+    addSpec: function() {
+        if (admEditing === null) return;
+        var p = admWorking[admEditing];
+        if (!p.specs) p.specs = [];
+        p.specs.push(['','','','']);
+        admDirty = true;
+        renderAdmEdit();
+    },
+    rmSpec: function(i) {
+        if (admEditing === null) return;
+        admWorking[admEditing].specs.splice(i, 1);
+        admDirty = true;
+        renderAdmEdit();
+    },
+    save: function() {
+        if (admEditing === null) return;
+        var p = admWorking[admEditing];
+        if (!p.name || !p.id) { alert('Заповніть назву та ID'); return; }
+        admEditing = null;
+        admDirty = true;
+        renderAdmList();
+        notify('Збережено');
+    },
+    addNew: function() {
+        var name = prompt('Назва нового товару:');
+        if (!name || !name.trim()) return;
+        admWorking.unshift({ id: 'p_' + Date.now(), name: name.trim(), price: 100, cat: '', img: [], short_uk: '', short_ru: '', desc_uk: '', desc_ru: '', specs: [] });
+        admEditing = 0;
+        admDirty = true;
+        renderAdmEdit();
+    },
+    del: function(i) {
+        if (!confirm('Видалити "' + admWorking[i].name + '"?')) return;
+        admWorking.splice(i, 1);
+        admEditing = null;
+        admDirty = true;
+        renderAdmList();
+    },
+    importJSON: function() {
+        var modal = document.createElement('div');
+        modal.className = 'adm-json-modal';
+        modal.innerHTML = '<div class="adm-json-box"><h3>📥 Імпорт товарів з JSON</h3>' +
+            '<p style="font-size:13px;color:#555;margin-bottom:10px">Вставте JSON-масив товарів</p>' +
+            '<textarea id="import-json" placeholder=\'[{"id":"test1","name":"Сорт","price":100,"cat":"","img":["url"],"short_uk":"","short_ru":"","desc_uk":"","desc_ru":"","specs":[]}]\'></textarea>' +
+            '<div style="margin-top:10px">' +
+            '<button style="background:#27ae60;color:#fff" onclick="ADMIN.doImport()">✓ Імпортувати</button>' +
+            '<button style="background:#f0f0f0;color:#555" onclick="this.closest(\'.adm-json-modal\').remove()">Скасувати</button>' +
+            '</div></div>';
+        document.body.appendChild(modal);
+    },
+    doImport: function() {
+        var text = document.getElementById('import-json').value;
+        try {
+            var arr = JSON.parse(text);
+            if (!Array.isArray(arr)) throw new Error('Це не масив');
+            var added = 0;
+            arr.forEach(function(item) {
+                if (!item.id || !item.name) return;
+                if (admWorking.some(function(x) { return x.id === item.id; })) {
+                    item.id = item.id + '_' + Date.now();
+                }
+                admWorking.push({
+                    id: item.id, name: item.name, price: item.price || 100,
+                    cat: item.cat || '', img: item.img || [],
+                    short_uk: item.short_uk || '', short_ru: item.short_ru || '',
+                    desc_uk: item.desc_uk || '', desc_ru: item.desc_ru || '',
+                    specs: item.specs || []
+                });
+                added++;
+            });
+            document.querySelector('.adm-json-modal').remove();
+            admDirty = true;
+            renderAdmList();
+            alert('Імпортовано: ' + added + ' товарів');
+        } catch(e) {
+            alert('Помилка JSON: ' + e.message);
+        }
+    },
+    exportJSON: function() {
+        var json = JSON.stringify(admWorking, null, 2);
+        var blob = new Blob([json], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = 'products-backup.json'; a.click();
+        URL.revokeObjectURL(url);
+    },
+    exportHTML: function() {
+        PRODUCTS.length = 0;
+        admWorking.forEach(function(x) { PRODUCTS.push(x); });
+        renderProducts(); renderCart();
+        admDirty = false;
+        var productsScript = 'window.PRODUCTS = ' + JSON.stringify(admWorking) + ';';
+        fetch(location.href).then(function(r) { return r.text(); }).then(function(html) {
+            var m = html.match(/(<script>\s*window\.PRODUCTS\s*=\s*)[\s\S]*?(\s*<\/script>)/);
+            if (!m) throw new Error('Не знайдено блок PRODUCTS');
+            var newHtml = html.replace(m[0], m[1] + productsScript + '\n<\/script>');
+            var blob = new Blob([newHtml], { type: 'text/html;charset=utf-8' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url; a.download = 'index.html'; a.click();
+            URL.revokeObjectURL(url);
+            alert('✅ index.html скачано. Замініть файл у проєкті → Commit → Push.');
+        }).catch(function(err) {
+            var modal = document.createElement('div');
+            modal.className = 'adm-json-modal';
+            modal.innerHTML = '<div class="adm-json-box"><h3>📋 Скопіюйте блок вручну</h3>' +
+                '<p style="font-size:13px;color:#555">Автоскачування не спрацювало (' + escA(err.message) + '). Скопіюйте код нижче і вставте замість <code>window.PRODUCTS = [{"id":"shugra48","name":"Кишмиш Шугра 48","price":1200,"cat":"new","img":["https://i.postimg.cc/Jn71gSc0/mid...];</code> в файлі.</p>' +
+                '<textarea readonly>' + escA(productsScript) + '</textarea>' +
+                '<button style="background:#4a7c59;color:#fff" onclick="var t=this.parentNode.querySelector(\'textarea\');t.select();document.execCommand(\'copy\');alert(\'Скопійовано!\')">📋 Скопіювати</button>' +
+                '<button style="background:#f0f0f0;color:#555" onclick="this.closest(\'.adm-json-modal\').remove()">Закрити</button>' +
+                '</div>';
+            document.body.appendChild(modal);
+        });
+    }
+};
+
+window.ADMIN = ADMIN;
+
+if (new URLSearchParams(location.search).get('admin') === '1') setTimeout(openAdmin, 400);
+var clicks = 0, tt;
+document.addEventListener('click', function(e) {
+    if (e.target.closest && e.target.closest('h1.site-title')) {
+        clicks++;
+        clearTimeout(tt);
+        tt = setTimeout(function() { clicks = 0; }, 800);
+        if (clicks >= 3) { clicks = 0; openAdmin(); }
+    }
+});
+
+function init() {
+    document.querySelectorAll('.lang-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-lang') === currentLanguage);
+        b.addEventListener('click', function() { changeLanguage(b.getAttribute('data-lang')); });
+    });
+    applyLanguageToStatic();
+    var si = document.getElementById('search-input');
+    if (si) si.addEventListener('input', onSearchInput);
+    renderProducts();
+    renderCart();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+
+})();
+</script>
+</body>
+</html>
